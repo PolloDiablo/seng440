@@ -1,1 +1,19 @@
+From Windows you'll need Putty and Putty SCP (PSCP).
 
+1. Copy the code to an ELW B215 computer (c66.seng.uvic.ca ... c101.seng.uvic.ca)
+  - Use PSCP from Windows cmd
+  - pscp.exe c:\some\path\to\a\file.txt user@remote:/hom/user/some/path
+  - Example: "C:\Program Files (x86)\PuTTY\pscp.exe" C:\git\seng440\main.c jeremyk@c101.seng.uvic.ca:/home/jeremyk/SENG440
+
+2. Compile
+  - Open Putty (or some SSH client)
+  - Connect to an ELW B215 computer
+  - Example: /opt/arm/4.3.2/bin/arm-linux-gcc -static -o main.exe main.c
+
+3. Get the executable from the ELW B215 computer
+  - Use PSCP from Windows cmd
+  - pscp.exe user@remote:/hom/user/some/file.txt c:\some\path\to\a\
+  - Example: "C:\Program Files (x86)\PuTTY\pscp.exe" jeremyk@c101.seng.uvic.ca:/home/jeremyk/SENG440/main.exe C:\git\seng440\
+
+4. Running the executable on ARM
+... coming soon? 
