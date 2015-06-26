@@ -10,10 +10,34 @@ From Windows you'll need Putty and Putty SCP (PSCP).
   - Connect to an ELW B215 computer
   - Example: /opt/arm/4.3.2/bin/arm-linux-gcc -static -o main.exe main.c
 
-3. Get the executable from the ELW B215 computer
-  - Use PSCP from Windows cmd
-  - pscp.exe user@remote:/hom/user/some/file.txt c:\some\path\to\a\
-  - Example: "C:\Program Files (x86)\PuTTY\pscp.exe" jeremyk@c101.seng.uvic.ca:/home/jeremyk/SENG440/main.exe C:\git\seng440\
+3. Connect to ARM machine and create a folder
+  - ssh seng440.ece.uvic.ca
+  - run "telnet arm" to connect to the arm-based machine, 
+  - Four users (user1, user2, user3, user4). The password is the same as the course website password.
+  - Create a folder of your own, e.g. "jeremyk"
+  
+3. Moving the executable to ARM
+  - To exit telnet: 'Ctrl' + ']', then "quit"
+  - navigate to the folder with the executable
+  - Setup a network config file for the lftp command:
+    - vi ~/.netrc
+    - Set the file contents to: "machine arm login user3 password <password>"
+  - Create an lftp script:
+    - vi script.lftp
+    - Set the file contents to: "open arm" "put -O <destFolderName> main.exe" "quit" (one command per line)
+  - lftp -f script.lftp
+  - ... this command takes awhile to execute
 
-4. Running the executable on ARM
-... coming soon? 
+5. Run the executable
+  - Re-connect to arm machine
+  - cd <destFolderName>
+  - run "chmod +wrx main.exe"
+  - ./main.exe
+  
+  
+
+
+Optional: Get the executable from the ELW B215 computer
+  - Use PSCP from Windows cmd
+  - pscp.exe user@remote:/home/user/some/file.txt c:\some\path\to\a\
+  - Example: "C:\Program Files (x86)\PuTTY\pscp.exe" jeremyk@c101.seng.uvic.ca:/home/jeremyk/SENG440/main.exe C:\git\seng440\
