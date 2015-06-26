@@ -3,7 +3,7 @@ From Windows you'll need Putty and Putty SCP (PSCP).
 1. Copy the code to an ELW B215 computer (c66.seng.uvic.ca ... c101.seng.uvic.ca)
   - Use PSCP from Windows cmd
   - pscp.exe c:\some\path\to\a\file.txt user@remote:/hom/user/some/path
-  - Example: "C:\Program Files (x86)\PuTTY\pscp.exe" C:\git\seng440\main.c jeremyk@c101.seng.uvic.ca:/home/jeremyk/SENG440
+  - Example: "C:\Program Files (x86)\PuTTY\pscp.exe" C:\git\seng440\main.c jeremyk@c101.seng.uvic.ca:/home/jeremyk/SENG440"
 
 2. Compile
   - Open Putty (or some SSH client)
@@ -33,11 +33,8 @@ From Windows you'll need Putty and Putty SCP (PSCP).
   - cd <destFolderName>
   - run "chmod +wrx main.exe"
   - ./main.exe
-  
-  
-
 
 Optional: Get the executable from the ELW B215 computer
   - Use PSCP from Windows cmd
   - pscp.exe user@remote:/home/user/some/file.txt c:\some\path\to\a\
-  - Example: "C:\Program Files (x86)\PuTTY\pscp.exe" jeremyk@c101.seng.uvic.ca:/home/jeremyk/SENG440/main.exe C:\git\seng440\
+  - Example: "C:\Program Files (x86)\PuTTY\pscp.exe" jeremyk@c101.seng.uvic.ca:/home/jeremyk/SENG440/main.exe C:\git\seng440\"
