@@ -16,7 +16,7 @@ From Windows you'll need Putty and Putty SCP (PSCP).
   - Four users (user1, user2, user3, user4). The password is the same as the course website password.
   - Create a folder of your own, e.g. "jeremyk"
   
-3. Moving the executable to ARM
+4. Move the executable to ARM
   - To exit telnet: 'Ctrl' + ']', then "quit"
   - navigate to the folder with the executable
   - Setup a network config file for the lftp command:
@@ -28,7 +28,7 @@ From Windows you'll need Putty and Putty SCP (PSCP).
   - lftp -f script.lftp
   - ... this command takes awhile to execute
 
-5. Run the executable
+5. Run the executable on ARM
   - Re-connect to arm machine
   - cd <destFolderName>
   - run "chmod +wrx main.exe"
