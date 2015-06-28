@@ -12,14 +12,19 @@ By: Jeremy Kroeker and Daniel Faulkner
 #define m 64
 #define BYTE_COUNT 8
 
-char* encrypt(char* input, char* pubkey, char* modulus);
-char* decrypt(char* input, char* privkey, char* modulus);
-char* exponentiate(char* input, char* exponent, char* modulus);
-char* montgomerize(char* x, char* y, char* modulus);
+typedef unsigned char BYTE;
 
-char* mulitiply_wc(char* a, char* b);
-char* add_wc(char* a, char* b);
-char* rightshift_wc(char* a);
+void encrypt(unsigned char* out, const char* input, unsigned const char* pubkey, unsigned const char* modulus);
+void decrypt(unsigned char* out, const char* input, unsigned const char* privkey, unsigned const char* modulus);
+void exponentiate(unsigned char* out, const char* input, unsigned const char* exponent, unsigned const char* modulus);
+void montgomerize(unsigned char* out, unsigned const char* x, unsigned const char* y, unsigned const char* modulus);
+
+void mulitiply_wc(unsigned char* out, unsigned const char* a, unsigned const char* b);
+void add_wc(unsigned char* out, unsigned const char* a, unsigned const char* b);
+void subtract_wc(unsigned char* out, unsigned const char* a, unsigned const char* b);
+void rightshift_wc(unsigned char* out, unsigned const char* a);
+int gte(unsigned const char* a, unsigned const char* b);
+
 
 unsigned const char P[BYTE_COUNT] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0xF3, 0xBD };
 unsigned const char Q[BYTE_COUNT] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x0E, 0x0E, 0xCD };
@@ -33,25 +38,26 @@ int main(int argc, char **argv) {
 	printf("Hello World!\n");
 	
     char* teststring = "hi world";
-    char* output = encrypt(teststring, E, M);
+    unsigned char output[BYTE_COUNT];
+    encrypt(output, teststring, E, M);
     printf("%.*s\n", 8, output);
     
 	exit(0);
 }
 
-char* encrypt(char* input, char* pubkey, char* modulus) {
-    return exponentiate(input, pubkey, modulus);
+void encrypt(unsigned char* out, const char* input, unsigned const char* pubkey, unsigned const char* modulus) {
+    exponentiate(out, input, pubkey, modulus);
 }
 
-char* decrypt(char* input, char* privkey, char* modulus) {
-    return exponentiate(input, privkey, modulus);
+void decrypt(unsigned char* out, const char* input, unsigned const char* privkey, unsigned const char* modulus) {
+    exponentiate(out, input, privkey, modulus);
 }
 
-char* exponentiate(char* input, char* exponent, char* modulus) {
+void exponentiate(unsigned char* out, const char* input, unsigned const char* exponent, unsigned const char* modulus) {
     unsigned char Z[BYTE_COUNT] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01 };
-    unsigned char *P_loc = char[BYTE_COUNT];
-    unsigned char *P_next = char[BYTE_COUNT];
-    unsigned char *E_loc = char[BYTE_COUNT];
+    unsigned char P_loc[BYTE_COUNT];
+    unsigned char P_next[BYTE_COUNT];
+    unsigned char E_loc[BYTE_COUNT];
 
     memcpy(P_loc, input, BYTE_COUNT);
     memcpy(E_loc, exponent, BYTE_COUNT);
@@ -59,16 +65,60 @@ char* exponentiate(char* input, char* exponent, char* modulus) {
     int i;
     
     for (i = 0; i < m; i++) {
-        memcpy(P_next, montgomerize(P_loc, P_loc, modulus), BYTE_COUNT);
+        montgomerize(P_next, P_loc, P_loc, modulus);
         if (E_loc[7] & 0x01) {
-            Z = montgomerize(Z, P_loc, modulus);
+            montgomerize(Z, Z, P_loc, modulus);
         } else {
             // Do nothing!
         }
 
         memcpy(P_loc, P_next, BYTE_COUNT);
-        E_loc = rightshift_wc(E_loc);
+        rightshift_wc(E_loc, E_loc);
     }
-        
+    memcpy(out, Z, BYTE_COUNT);    
 }
 
+void montgomerize(unsigned char* out, unsigned const char* x, unsigned const char* y, unsigned const char* modulus){
+    unsigned char T[BYTE_COUNT] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    unsigned char x_loc[BYTE_COUNT];
+    
+    memcpy(x_loc, x, BYTE_COUNT);
+    
+    int i;
+    char temp_bit;
+    char x0; // register
+
+    for(i = 0 ; i < m ; i++){
+        x0 = x_loc[7]&0x01;
+        temp_bit = (T[7] & 0x01) + x0&y[7];
+        if(x0){
+            add_wc(T, T, y);
+        }
+        if(temp_bit){
+            add_wc(T, T, modulus);
+        }
+        rightshift_wc(T, T);
+    }
+
+    if(gte(T,M)){
+        subtract_wc(T, T, M);
+    }
+    memcpy(out, T, BYTE_COUNT);
+}
+
+void mulitiply_wc(unsigned char* out, unsigned const char* a, unsigned const char* b){
+    //TODO
+}
+void add_wc(unsigned char* out, unsigned const char* a, unsigned const char* b){
+    //TODO
+}
+void subtract_wc(unsigned char* out, unsigned const char* a, unsigned const char* b){
+    //TODO
+}
+void rightshift_wc(unsigned char* out, unsigned const char* a){
+    //TODO
+}
+int gte(unsigned const char* a, unsigned const char* b){
+    //TODO
+    return 1;
+}
