@@ -1,9 +1,9 @@
-/*
+/* ----------------------------------------------
 SENG 440
-Cryptography Project
+RSA Cryptography Project
 
 By: Jeremy Kroeker and Daniel Faulkner
-*/
+---------------------------------------------- */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,10 +19,10 @@ void decrypt(unsigned char* out, const char* input, unsigned const char* privkey
 void exponentiate(unsigned char* out, const char* input, unsigned const char* exponent, unsigned const char* modulus);
 void montgomerize(unsigned char* out, unsigned const char* x, unsigned const char* y, unsigned const char* modulus);
 
-void mulitiply_wc(unsigned char* out, unsigned const char* a, unsigned const char* b);
-void add_wc(unsigned char* out, unsigned const char* a, unsigned const char* b);
-void subtract_wc(unsigned char* out, unsigned const char* a, unsigned const char* b);
-void rightshift_wc(unsigned char* out, unsigned const char* a);
+void multiply_wc(unsigned const char* a, unsigned const char* b);
+void add_wc(unsigned const char* a, unsigned const char* b);
+void subtract_wc(unsigned const char* a, unsigned const char* b);
+void rightshift_wc(unsigned const char* a);
 int gte(unsigned const char* a, unsigned const char* b);
 
 
@@ -73,7 +73,7 @@ void exponentiate(unsigned char* out, const char* input, unsigned const char* ex
         }
 
         memcpy(P_loc, P_next, BYTE_COUNT);
-        rightshift_wc(E_loc, E_loc);
+        rightshift_wc(E_loc);
     }
     memcpy(out, Z, BYTE_COUNT);    
 }
@@ -89,35 +89,39 @@ void montgomerize(unsigned char* out, unsigned const char* x, unsigned const cha
     char x0; // register
 
     for(i = 0 ; i < m ; i++){
-        x0 = x_loc[7]&0x01;
-        temp_bit = (T[7] & 0x01) + x0&y[7];
+        x0 = x_loc[7] & 0x01;
+        temp_bit = (T[7] & 0x01) + x0 & y[7];
         if(x0){
-            add_wc(T, T, y);
+            add_wc(T, y);
         }
         if(temp_bit){
-            add_wc(T, T, modulus);
+            add_wc(T, modulus);
         }
-        rightshift_wc(T, T);
+        rightshift_wc(T);
     }
 
     if(gte(T,M)){
-        subtract_wc(T, T, M);
+        subtract_wc(T, M);
     }
     memcpy(out, T, BYTE_COUNT);
 }
 
-void mulitiply_wc(unsigned char* out, unsigned const char* a, unsigned const char* b){
+void multiply_wc(unsigned const char* a, unsigned const char* b){
     //TODO
 }
-void add_wc(unsigned char* out, unsigned const char* a, unsigned const char* b){
+
+void add_wc(unsigned const char* a, unsigned const char* b){
     //TODO
 }
-void subtract_wc(unsigned char* out, unsigned const char* a, unsigned const char* b){
+
+void subtract_wc(unsigned const char* a, unsigned const char* b){
     //TODO
 }
-void rightshift_wc(unsigned char* out, unsigned const char* a){
-    //TODO
+
+void rightshift_wc(unsigned const char* a){
+    
 }
+
 int gte(unsigned const char* a, unsigned const char* b){
     //TODO
     return 1;
