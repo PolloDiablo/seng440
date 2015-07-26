@@ -31,6 +31,8 @@ int gte(unsigned const char* a, unsigned const char* b);
 void print_array(unsigned const char* arr);
 void mont_test();
 void full_test();
+
+int DEBUG_LINES = 0;
 //
 
 unsigned const char P[BYTE_COUNT] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0xF3, 0xBD };
@@ -39,7 +41,7 @@ unsigned const char M[BYTE_COUNT] = { 0x00, 0x00, 0x00, 0x53, 0xAC, 0x6E, 0x84, 
 unsigned const char E[BYTE_COUNT] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x21 };
 //unsigned const char D[BYTE_COUNT] = { 0x00, 0x00, 0x00, 0x05, 0x12, 0x35, 0x3E, 0x53 };
 unsigned const char D[BYTE_COUNT] = { 0x00, 0x00, 0x00, 0x51, 0x23, 0x40, 0x7D, 0xE1 };
-unsigned const char Nr[BYTE_COUNT] = { 0x00, 0x00, 0x00, 0x2F, 0x13, 0x4F, 0xEB, 0xAE };
+unsigned const char Nr[BYTE_COUNT] = { 0x00, 0x00, 0x00, 0x40, 0x45, 0xD1, 0x59, 0xFA };
 
 int main(int argc, char **argv) {
     //mont_test();
@@ -52,6 +54,7 @@ void print_array(unsigned const char* arr) {
 
     for (i = 0; i < BYTE_COUNT; i++) {
         printf("%02x ", arr[i]);
+        //printf("%c ", arr[i]);
     }
     printf("\n");
 }
@@ -66,7 +69,7 @@ void mont_test() {
 }
 
 void full_test() {
-    //char* teststring = "hi world";
+    //unsigned char* teststring = "hi";
     unsigned char teststring[BYTE_COUNT] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x48, 0x49 };
     unsigned char output[BYTE_COUNT];
     unsigned char next_output[BYTE_COUNT];
@@ -93,8 +96,10 @@ void exponentiate(unsigned char* out, unsigned const char* input, unsigned const
     unsigned char E_loc[BYTE_COUNT];
 
     montgomerize(Z, One, Nr, modulus);
-    montgomerize(P_loc, input, Nr, modulus);
+    montgomerize(P_loc, Nr, input, modulus);
 
+    //DEBUG_LINES = 0;
+    
     //memcpy(P_loc, input, BYTE_COUNT);
     memcpy(E_loc, exponent, BYTE_COUNT);
 
@@ -111,8 +116,8 @@ void exponentiate(unsigned char* out, unsigned const char* input, unsigned const
         memcpy(P_loc, P_next, BYTE_COUNT);
         rightshift_wc(E_loc);
     }
-    montgomerize(Z, One, Z, modulus);
-    memcpy(out, Z, BYTE_COUNT);    
+    montgomerize(out, One, Z, modulus);
+    //memcpy(out, Z, BYTE_COUNT);    
 }
 
 void montgomerize(unsigned char* out, unsigned const char* x, unsigned const char* y, unsigned const char* modulus){
@@ -125,25 +130,36 @@ void montgomerize(unsigned char* out, unsigned const char* x, unsigned const cha
     char temp_bit;
     char x0; // register
 
+    if (DEBUG_LINES) {
+        print_array(x_loc);
+        print_array(y);
+        print_array(modulus);
+    }
+
     for(i = 0 ; i < m ; i++){
-        printf("MMM loop iteration number %i:\n", i);
+        if (DEBUG_LINES) { printf("MMM loop iteration number %i:\n", i); }
         x0 = x_loc[7] & 0x01;
-        temp_bit = (T[7] & 0x01) + (x0 & y[7]);
-        printf("T0: %02x | X(i): %02x | Y(0): %02x | result: %02x", T[7] & 0x01, x0, y[7], temp_bit);
-        if(x0){
-            add_wc(T, T, y);
+        temp_bit = ((T[7] & 0x01) + (x0 & y[7])) & 0x01;
+        if (DEBUG_LINES) { printf("T0: %02x | X(i): %02x | Y(0): %02x | result: %02x\n", T[7] & 0x01, x0, y[7], temp_bit); }
+        if (x0) {
+            if (add_wc(T, T, y)) {
+                printf("Add overflow with x0\n");
+            }
         }
-        if(temp_bit){
-            add_wc(T, T, modulus);
+        if (temp_bit) {
+            //printf("t=%02x\n", temp_bit);
+            if (add_wc(T, T, modulus)) {
+                printf("Add overflow with temp_bit\n");
+            }
         }
         rightshift_wc(T);
         rightshift_wc(x_loc);
-        print_array(T);
+        if (DEBUG_LINES) { print_array(T); }
     }
 
-    if(gte(T,M)){
+    /*if(gte(T,M)){
         subtract_wc(T, T, M);
-    }
+    }*/
     memcpy(out, T, BYTE_COUNT);
 }
 
