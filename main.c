@@ -12,18 +12,13 @@
 #define m 64
 #define BYTE_COUNT 8
 
-typedef unsigned char BYTE;
-
 void encrypt(unsigned char* out, unsigned const char* input, unsigned const char* pubkey, unsigned const char* modulus);
 void decrypt(unsigned char* out, unsigned const char* input, unsigned const char* privkey, unsigned const char* modulus);
 void mme(unsigned char* out, unsigned const char* input, unsigned const char* exponent, unsigned const char* modulus);
 void mmm(unsigned char* out, unsigned const char* x, unsigned const char* y, unsigned const char* modulus);
 
-void multiply_wc(unsigned char* out, unsigned const char* a, unsigned const char* b);
 unsigned char add_wc(unsigned char* out, unsigned const char* a, unsigned const char* b);
-unsigned char subtract_wc(unsigned char* out, unsigned const char* a, unsigned const char* b);
 void rightshift_wc(unsigned char* a);
-int gte(unsigned const char* a, unsigned const char* b);
 
 // TEMP functions --------------------------
 void print_array(unsigned const char* arr);
@@ -45,6 +40,7 @@ unsigned const char Nr[BYTE_COUNT] = { 0x0B, 0xC8, 0xEC, 0x02, 0xEF, 0xBA, 0x65,
 //
 int main() {
     full_test();
+    //mont_test();
     exit(0);
 }
 
@@ -170,7 +166,7 @@ void mmm(unsigned char* out, unsigned const char* x, unsigned const char* y, uns
     unsigned char x_loc[BYTE_COUNT];
     
     memcpy(x_loc, x, BYTE_COUNT);
-    
+
     int i;
     char temp_bit;
     char x0; // register
