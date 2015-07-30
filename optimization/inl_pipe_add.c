@@ -208,35 +208,29 @@ void mmm(unsigned char* out, unsigned const char* x, unsigned const char* y, uns
 inline unsigned char add_wc(unsigned char* out, unsigned const char* a, unsigned const char* b) {
     int i;
     unsigned char overflow = 0;
-    
     unsigned char msb_a;
     unsigned char msb_b;
     unsigned char msb_c;
     unsigned char msb_d;
 
-    register unsigned char temp_a = a[7];
-    register unsigned char temp_b = b[7];
+    register unsigned char temp_a;
+    register unsigned char temp_b;
     register unsigned char temp_out;
 
-    msb_a = temp_a & 0x80;
-
     for (i = BYTE_COUNT - 1; i >= 0; i--) {
-        temp_out = temp_a + overflow;
-        msb_b = temp_out & 0x80;
-        msb_d = temp_b & 0x80;
-        msb_a &= (0x80 ^ msb_b);
-        msb_c = msb_b | msb_d;
-        
-        temp_out += temp_b;
-        msb_b = msb_b & msb_d;
-        msb_d = temp_out & 0x80;
-
-        out[i] = temp_out;
-
         temp_a = a[i];
         temp_b = b[i];
 
-        overflow = (msb_a | msb_b | (msb_c & (0x80 ^ msb_d))) >> 7;
+        msb_a = temp_a & 0x80;
+        temp_out = temp_a + overflow;
+        msb_b = temp_out & 0x80;
+        msb_c = temp_b & 0x80;
+        temp_out += temp_b;
+        msb_d = temp_out & 0x80;
+
+        out[i] = temp_out;
+        
+        overflow = ((msb_a & (0x80 ^ msb_b)) | (msb_b & msb_c) | ((msb_b | msb_c) & (0x80 ^ msb_d))) >> 7;
     }
 
     return overflow;
