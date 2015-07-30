@@ -15,3 +15,14 @@ test:
 assembly:
 	arm-none-linux-gnueabi-gcc-4.3.2 -static -S -O -Wall -Wextra -pg -o optimized.s optimized.c
 	arm-none-linux-gnueabi-gcc-4.3.2 -static -S -O -Wall -Wextra -pg -o main.s main.c
+
+main_compile:
+	arm-none-linux-gnueabi-gcc-4.3.2 -static -O -Wall -Wextra -o main.out main.c
+
+main_test:
+	arm-none-linux-gnueabi-gcc-4.3.2 -static -O -Wall -Wextra -pg -o main.out main.c
+	qemu-arm main.out
+	gprof main.out | head -n20
+
+main_assembly:
+	arm-none-linux-gnueabi-gcc-4.3.2 -static -S -O -Wall -Wextra -pg -o main.s main.c
