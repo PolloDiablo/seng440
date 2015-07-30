@@ -18,7 +18,7 @@ void mme(unsigned char* out, unsigned const char* input, unsigned const char* ex
 void mmm(unsigned char* out, unsigned const char* x, unsigned const char* y, unsigned const char* modulus);
 
 unsigned char add_wc(unsigned char* out, unsigned const char* a, unsigned const char* b);
-void rightshift_wc(unsigned char* a);
+inline void rightshift_wc(unsigned char* a);
 
 // TEMP functions --------------------------
 void print_array(unsigned const char* arr);
@@ -232,7 +232,7 @@ unsigned char add_wc(unsigned char* out, unsigned const char* a, unsigned const 
 //
 //   a:     The char array bit shifted in place one to the right.
 //
-void rightshift_wc(unsigned char* a){
+inline void rightshift_wc(unsigned char* a){
     int i;
     char carry = 0x00;
 

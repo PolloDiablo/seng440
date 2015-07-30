@@ -77,8 +77,11 @@ void full_test() {
     unsigned int teststring[INT_COUNT] = {0x00000000, 0x00004849 };
     unsigned int output[INT_COUNT];
     unsigned int next_output[INT_COUNT];
-    encrypt(output, teststring, E, M);
-    decrypt(next_output, output, D, M);
+    int i;
+    for (i = 0; i < 1000; i++) {
+        encrypt(output, teststring, E, M);
+        decrypt(next_output, output, D, M);
+    }
     print_array(output);
     print_array(next_output);
 }

@@ -17,8 +17,8 @@ void decrypt(unsigned char* out, unsigned const char* input, unsigned const char
 void mme(unsigned char* out, unsigned const char* input, unsigned const char* exponent, unsigned const char* modulus);
 void mmm(unsigned char* out, unsigned const char* x, unsigned const char* y, unsigned const char* modulus);
 
-unsigned char add_wc(unsigned char* out, unsigned const char* a, unsigned const char* b);
-void rightshift_wc(unsigned char* a);
+inline unsigned char add_wc(unsigned char* out, unsigned const char* a, unsigned const char* b);
+inline void rightshift_wc(unsigned char* a);
 
 // TEMP functions --------------------------
 void print_array(unsigned const char* arr);
@@ -205,23 +205,38 @@ void mmm(unsigned char* out, unsigned const char* x, unsigned const char* y, uns
 //
 //    returns:  1 if there was overflow; 0 otherwise.
 //
-unsigned char add_wc(unsigned char* out, unsigned const char* a, unsigned const char* b){
+inline unsigned char add_wc(unsigned char* out, unsigned const char* a, unsigned const char* b) {
     int i;
     unsigned char overflow = 0;
+    
     unsigned char msb_a;
     unsigned char msb_b;
     unsigned char msb_c;
     unsigned char msb_d;
 
-    for (i = BYTE_COUNT - 1; i >= 0; i--) {
-        msb_a = a[i] & 0x80;
-        out[i] = a[i] + overflow;
-        msb_b = out[i] & 0x80;
-        msb_c = b[i] & 0x80;
-        out[i] += b[i];
-        msb_d = out[i] & 0x80;
+    register unsigned char temp_a = a[7];
+    register unsigned char temp_b = b[7];
+    register unsigned char temp_out;
 
-        overflow = ((msb_a & (0x80 ^ msb_b)) | (msb_b & msb_c) | ((msb_b | msb_c) & (0x80 ^ msb_d))) >> 7;
+    msb_a = temp_a & 0x80;
+
+    for (i = BYTE_COUNT - 1; i >= 0; i--) {
+        temp_out = temp_a + overflow;
+        msb_b = temp_out & 0x80;
+        msb_d = temp_b & 0x80;
+        msb_a &= (0x80 ^ msb_b);
+        msb_c = msb_b | msb_d;
+        
+        temp_out += temp_b;
+        msb_b = msb_b & msb_d;
+        msb_d = temp_out & 0x80;
+
+        out[i] = temp_out;
+
+        temp_a = a[i];
+        temp_b = b[i];
+
+        overflow = (msb_a | msb_b | (msb_c & (0x80 ^ msb_d))) >> 7;
     }
 
     return overflow;
@@ -232,14 +247,53 @@ unsigned char add_wc(unsigned char* out, unsigned const char* a, unsigned const 
 //
 //   a:     The char array bit shifted in place one to the right.
 //
-void rightshift_wc(unsigned char* a){
-    int i;
-    char carry = 0x00;
+inline void rightshift_wc(unsigned char* a){
+    register unsigned char temp_a;
+    register unsigned char temp_b;
+    register unsigned char carry_a;
+    register unsigned char carry_b;
+    
+    temp_a = a[0];
+    carry_a = (temp_a & 0x01) << 7;
+    temp_a = temp_a >> 1;
 
-    for (i = 0; i < BYTE_COUNT; i++) {
-        char next_carry = a[i] & 0x01;
-        a[i] = (a[i] >> 1) | carry << 7;
-        carry = next_carry;
-    }
+    temp_b = a[1];
+    carry_b = (temp_b & 0x01) << 7;
+    temp_b = (temp_b >> 1) | carry_a;
+
+    a[0] = temp_a;
+    a[1] = temp_b;
+
+    temp_a = a[2];
+    carry_a = (temp_a & 0x01) << 7;
+    temp_a = (temp_a >> 1) | carry_b;
+
+    temp_b = a[3];
+    carry_b = (temp_b & 0x01) << 7;
+    temp_b = (temp_b >> 1) | carry_a;
+
+    a[2] = temp_a;
+    a[3] = temp_b;
+
+    temp_a = a[4];
+    carry_a = (temp_a & 0x01) << 7;
+    temp_a = (temp_a >> 1) | carry_b;
+
+    temp_b = a[5];
+    carry_b = (temp_b & 0x01) << 7;
+    temp_b = (temp_b >> 1) | carry_a;
+
+    a[4] = temp_a;
+    a[5] = temp_b;
+
+    temp_a = a[6];
+    carry_a = (temp_a & 0x01) << 7;
+    temp_a = (temp_a >> 1) | carry_b;
+
+    temp_b = a[7];
+    temp_b = (temp_b >> 1) | carry_a;
+    
+    a[6] = temp_a;
+    a[7] = temp_b;
 }
 
