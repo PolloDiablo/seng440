@@ -17,8 +17,8 @@ void decrypt(unsigned int* out, unsigned const int* input, unsigned const int* p
 void mme(unsigned int* out, unsigned const int* input, unsigned const int* exponent, unsigned const int* modulus);
 void mmm(unsigned int* out, unsigned const int* x, unsigned const int* y, unsigned const int* modulus);
 
-unsigned int add_wc(unsigned int* out, unsigned const int* a, unsigned const int* b);
-void rightshift_wc(unsigned int* a);
+inline unsigned int add_wc(unsigned int* out, unsigned const int* a, unsigned const int* b);
+inline void rightshift_wc(unsigned int* a);
 
 // TEMP functions --------------------------
 void print_array(unsigned const int* arr);
@@ -206,7 +206,7 @@ void mmm(unsigned int* out, unsigned const int* x, unsigned const int* y, unsign
 //
 //    returns:  1 if there was overflow; 0 otherwise.
 //
-unsigned int add_wc(unsigned int* out, unsigned const int* a, unsigned const int* b){
+inline unsigned int add_wc(unsigned int* out, unsigned const int* a, unsigned const int* b){
     int i;
     unsigned int overflow = 0;
     unsigned int msb_a;
@@ -242,7 +242,7 @@ unsigned int add_wc(unsigned int* out, unsigned const int* a, unsigned const int
 //
 //   a:     The int array bit shifted in place one to the right.
 //
-void rightshift_wc(unsigned int* a){
+inline void rightshift_wc(unsigned int* a){
     register unsigned int temp_a;
     register unsigned int temp_b;
     register unsigned int carry_a;
